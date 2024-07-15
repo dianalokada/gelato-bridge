@@ -10,9 +10,9 @@ contract MockERC20 is ERC20, Ownable {
     event TokensBurned(address indexed from, uint256 amount);
 
     // Constructor function initializes the ERC20 token with a name MockERC20 and a symbol MERC20
-    constructor(address initialOwner) ERC20("MockERC20", "MERC20") {
-        // Pass the initialOwner address to the Ownable constructor
-        Ownable.initialize(initialOwner);    }
+    constructor(address initialOwner) ERC20("MockERC20", "MERC20") Ownable(initialOwner) {
+        // No need to initialize Ownable separately, as it's done in the constructor header
+    }
 
     // Mint function that allows the contract owner to mint new tokens
     function mint(address to, uint256 amount) external onlyOwner {
@@ -25,6 +25,7 @@ contract MockERC20 is ERC20, Ownable {
         _burn(msg.sender, amount);
         emit TokensBurned(msg.sender, amount);
     }
+
     // Another mint function used by the Web3Function
     // Only the contract owner can call this function
     function mintForFunction(address to, uint256 amount) external onlyOwner {
