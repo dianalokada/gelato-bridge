@@ -21,15 +21,8 @@ contract MockERC20 is ERC20, Ownable {
     }
 
     // Burn function that allows any user to burn their own tokens
-    function burn(uint256 amount) external {
+    function burn(uint256 amount) external onlyOwner {
         _burn(msg.sender, amount);
-            emit TokensBurned(msg.sender, amount);
-    }
-
-    // Another mint function used by the Web3Function
-    // Only the contract owner can call this function
-    function mintForFunction(address to, uint256 amount) external onlyOwner {
-        _mint(to, amount);
-        emit TokensMinted(to, amount);
+        emit TokensBurned(msg.sender, amount);
     }
 }

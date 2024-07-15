@@ -36,35 +36,34 @@ describe("MockERC20", function () {
     });
 
     it("Should not allow non-owner to mint tokens", async function () {
-      await expect(mockERC20.connect(addr1).mint(addr2.address, 100)).to.be.revertedWith("Ownable: caller is not the owner");
-    });
-
-    it("Should allow owner to mint tokens using mintForFunction", async function () {
-      await expect(mockERC20.mintForFunction(addr1.address, 100))
-        .to.emit(mockERC20, "TokensMinted")
-        .withArgs(addr1.address, 100);
-      expect(await mockERC20.balanceOf(addr1.address)).to.equal(100);
-    });
-
-    it("Should not allow non-owner to mint tokens using mintForFunction", async function () {
-      await expect(mockERC20.connect(addr1).mintForFunction(addr2.address, 100)).to.be.revertedWith("Ownable: caller is not the owner");
+      await expect(mockERC20.connect(addr1).mint(addr2.address, 100))
+        .to.be.revertedWithCustomError(mockERC20, "OwnableUnauthorizedAccount")
+        .withArgs(addr1.address);
     });
   });
 
   describe("Burning", function () {
     beforeEach(async function () {
-      await mockERC20.mint(addr1.address, 1000);
+      await mockERC20.mint(owner.address, 1000);
     });
 
-    it("Should allow users to burn their own tokens", async function () {
-      await expect(mockERC20.connect(addr1).burn(100))
+    it("Should allow owner to burn tokens", async function () {
+      await expect(mockERC20.burn(100))
         .to.emit(mockERC20, "TokensBurned")
-        .withArgs(addr1.address, 100);
-      expect(await mockERC20.balanceOf(addr1.address)).to.equal(900);
+        .withArgs(owner.address, 100);
+      expect(await mockERC20.balanceOf(owner.address)).to.equal(900);
     });
 
-    it("Should not allow users to burn more tokens than they have", async function () {
-      await expect(mockERC20.connect(addr1).burn(1001)).to.be.revertedWith("ERC20: burn amount exceeds balance");
+    it("Should not allow non-owner to burn tokens", async function () {
+      await expect(mockERC20.connect(addr1).burn(100))
+        .to.be.revertedWithCustomError(mockERC20, "OwnableUnauthorizedAccount")
+        .withArgs(addr1.address);
+    });
+
+    it("Should not allow owner to burn more tokens than they have", async function () {
+      await expect(mockERC20.burn(1001))
+        .to.be.revertedWithCustomError(mockERC20, "ERC20InsufficientBalance")
+        .withArgs(owner.address, 1000, 1001);
     });
   });
 });
