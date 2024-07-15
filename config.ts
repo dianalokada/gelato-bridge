@@ -21,21 +21,23 @@ const gelatoApiKey = process.env.GELATO_API_KEY;
 
 // Error checking
 if (!privateKey) {
-    throw new Error('Private key is not set in the environment variables');
+  throw new Error('Private key is not set in the environment variables');
 }
 
 if (!contractAddressArbitrumSepolia || !contractAddressOptimismSepolia) {
-    console.warn('One or both contract addresses are not set. Make sure to deploy your contracts and update the .env file');
+  console.warn(
+    'One or both contract addresses are not set. Make sure to deploy your contracts and update the .env file',
+  );
 }
 
 // Export the variables so they can be used in other parts of your application
 export {
-    arbitrumSepoliaRPC,
-    optimismSepoliaRPC,
-    privateKey,
-    contractAddressArbitrumSepolia,
-    contractAddressOptimismSepolia,
-    arbiscanApiKey,
-    optimismApiKey,
-    gelatoApiKey
+  arbitrumSepoliaRPC,
+  optimismSepoliaRPC,
+  privateKey,
+  contractAddressArbitrumSepolia,
+  contractAddressOptimismSepolia,
+  arbiscanApiKey,
+  optimismApiKey,
+  gelatoApiKey,
 };

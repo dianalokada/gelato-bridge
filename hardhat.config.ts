@@ -1,14 +1,14 @@
-import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-ethers";
-import "@nomicfoundation/hardhat-toolbox";
-import "@nomicfoundation/hardhat-chai-matchers";
-import dotenv from "dotenv";
+import { HardhatUserConfig } from 'hardhat/config';
+import '@nomicfoundation/hardhat-ethers';
+import '@nomicfoundation/hardhat-toolbox';
+import '@nomicfoundation/hardhat-chai-matchers';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.24",
+    version: '0.8.24',
     settings: {
       optimizer: {
         enabled: true,
@@ -19,13 +19,13 @@ const config: HardhatUserConfig = {
   networks: {
     arbitrumSepolia: {
       url: process.env.ARBITRUM_SEPOLIA_RPC_URL,
-      accounts: [process.env.PRIVATE_KEY!]
+      accounts: [process.env.PRIVATE_KEY!],
     },
     optimismSepolia: {
       url: process.env.OPTIMISM_SEPOLIA_RPC_URL,
-      accounts: [process.env.PRIVATE_KEY!]
-    }
-  }
+      accounts: [process.env.PRIVATE_KEY!],
+    },
+  },
 };
 
 export default config;
