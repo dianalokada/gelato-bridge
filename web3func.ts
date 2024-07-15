@@ -8,4 +8,3 @@ import {
 } from './config';
 
 // to use the variables from config.ts
-

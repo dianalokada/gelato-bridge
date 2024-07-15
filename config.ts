@@ -19,7 +19,7 @@ const optimismApiKey = process.env.OPTIMISM_API_KEY;
 // Gelato specific
 const gelatoApiKey = process.env.GELATO_API_KEY;
 
-// You might want to add some error checking
+// Error checking
 if (!privateKey) {
     throw new Error('Private key is not set in the environment variables');
 }
