@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
@@ -24,5 +24,11 @@ contract MockERC20 is ERC20, Ownable {
     function burn(uint256 amount) external onlyOwner {
         _burn(msg.sender, amount);
         emit TokensBurned(msg.sender, amount);
+    }
+
+    // Function to mint tokens to admin's address for testing
+    function mintToAdmin(uint256 amount) external onlyOwner {
+        _mint(msg.sender, amount);
+        emit TokensMinted(msg.sender, amount);
     }
 }

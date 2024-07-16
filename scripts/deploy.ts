@@ -3,7 +3,7 @@ import { ethers, run, network } from 'hardhat';
 async function main() {
   const [deployer] = await ethers.getSigners();
 
-  console.log('Deploying MockERC20 on ${network.name} with account:', deployer.address);
+  console.log(`Deploying MockERC20 on ${network.name} with account:`, deployer.address);
 
   // Deploying the MockERC20 contract
   const MockERC20Factory = await ethers.getContractFactory('MockERC20');
