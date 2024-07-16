@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -21,9 +21,12 @@
     "@nomicfoundation/hardhat-ethers": "^3.0.6",
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@types/chai": "^4.3.16",
+    "@types/jest": "^29.5.12",
     "@types/mocha": "^10.0.7",
     "@types/node": "^20.14.10",
     "ethers": "^6.13.1",
-    "prettier": "^3.3.3"
+    "jest": "^29.7.0",
+    "prettier": "^3.3.3",
+    "ts-jest": "^29.2.2"
   }
 }

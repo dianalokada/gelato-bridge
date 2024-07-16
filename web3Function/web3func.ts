@@ -1,4 +1,8 @@
-import { Web3Function, Web3FunctionContext } from '@gelatonetwork/web3-functions-sdk';
+import {
+  Web3Function,
+  Web3FunctionContext,
+  Web3FunctionResult,
+} from '@gelatonetwork/web3-functions-sdk';
 import { Contract, ethers, EventLog } from 'ethers';
 import { GelatoRelay } from '@gelatonetwork/relay-sdk';
 import {
@@ -7,7 +11,7 @@ import {
   gelatoApiKey,
   contractAddressArbitrumSepolia,
   contractAddressOptimismSepolia,
-} from './config';
+} from '../config';
 
 // Validate that required configuration variables are defined
 if (!contractAddressArbitrumSepolia) {
@@ -29,7 +33,7 @@ const ABI = [
 const relay = new GelatoRelay();
 
 // Define the main Web3Function
-Web3Function.onRun(async (context: Web3FunctionContext) => {
+export const onRun = async (context: Web3FunctionContext): Promise<Web3FunctionResult> => {
   try {
     // Create providers for Arbitrum and Optimism Sepolia networks
     const arbitrumProvider = new ethers.JsonRpcProvider(arbitrumSepoliaRPC);
@@ -102,4 +106,7 @@ Web3Function.onRun(async (context: Web3FunctionContext) => {
     console.error('Error in Web3 Function:', error);
     return { canExec: false, message: `Error occurred: ${(error as Error).message}` };
   }
-});
+};
+
+//pass the onRun function to the Web3Function.onRun method
+Web3Function.onRun(onRun);
