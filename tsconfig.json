@@ -10,6 +10,6 @@
     "jsx": "react",
     "moduleResolution": "node"
   },
-  "include": ["src/**/*", "test/**/*"],
+  "include": ["src/**/*", "test/**/*", "scripts/**/*"],
   "exclude": ["node_modules"]
 }

@@ -2,6 +2,7 @@ import { HardhatUserConfig } from 'hardhat/config';
 import '@nomicfoundation/hardhat-ethers';
 import '@nomicfoundation/hardhat-toolbox';
 import '@nomicfoundation/hardhat-chai-matchers';
+import '@gelatonetwork/web3-functions-sdk/hardhat-plugin';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -25,6 +26,11 @@ const config: HardhatUserConfig = {
       url: process.env.OPTIMISM_SEPOLIA_RPC_URL,
       accounts: [process.env.PRIVATE_KEY!],
     },
+  },
+  w3f: {
+    rootDir: './web3Function',
+    debug: false,
+    networks: ['arbitrumSepolia', 'optimismSepolia'],
   },
 };
 

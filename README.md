@@ -44,7 +44,6 @@ npx hardhat run scripts/deploy.ts --network arbitrumSepolia
 npx hardhat run scripts/deploy.ts --network optimismSepolia
 ```
 
-
 ## Create a `.env` file in the root directory and add your contract addresses:
 
 ```bash
@@ -59,9 +58,10 @@ npm start
 ```
 
 ## Update contract addresses in the App.tsx:
+
 Replace 'MY_ARBITRUM_CONTRACT_ADDRESS' and 'MY_OPTIMISM_CONTRACT_ADDRESS' with the actual deployed contract addresses.
 
-## Open your browser and navigate to `http://localhost:3000`
+## Open your browser and navigate to `http://localhost:5173`
 
 Connect your Web3 wallet (ensure you're on either Arbitrum Sepolia or Optimism Sepolia network)
 
@@ -87,14 +87,17 @@ npm test
 ```
 
 ## Configure MetaMask:
+
 - Add Arbitrum Sepolia and Optimism Sepolia networks to MetaMask.
 - Fund your MetaMask account with testnet tokens for both networks.
 
 ## Interact with the UI:
+
 - Connect MetaMask to your app.
 - Switch between Arbitrum Sepolia and Optimism Sepolia in MetaMask to test bridging from both directions.
 
 ## Test the bridge:
+
 - Mint tokens before bridging
 - Input an amount to bridge
 - Select the source chain
@@ -102,6 +105,7 @@ npm test
 - Approve the transaction in MetaMask
 
 ## Verify the result:
+
 - Check that tokens were burned on the source chain
 - Switch to the destination chain in MetaMask
 - Verify that tokens were minted on the destination chain
