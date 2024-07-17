@@ -68,6 +68,34 @@ const BridgeUI: React.FC<BridgeUIProps> = ({
     setDestChainId(e.target.value === '421614' ? '11155420' : '421614');
   };
 
+  const mintTokens = async () => {
+    if (!signer) return;
+    setIsLoading(true);
+    try {
+      // Get the provider from the signer
+      const provider = signer.provider;
+      if (!provider) {
+        throw new Error('No provider available');
+      }
+
+      // Get the network from the provider, which includes the chainId
+      const network = await provider.getNetwork();
+      const chainId = network.chainId;
+
+      const contractAddress =
+        chainId === 421614n ? arbitrumContractAddress : optimismContractAddress;
+      const contract = new ethers.Contract(contractAddress, ABI, signer);
+      const tx = await contract.mintToAdmin(ethers.parseUnits('100', 18)); // Mint 100 tokens
+      await tx.wait();
+      alert('Tokens minted successfully!');
+    } catch (error) {
+      console.error('Error minting tokens:', error);
+      alert('Failed to mint tokens.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="bridge-ui">
       <form onSubmit={handleBridge}>
@@ -96,6 +124,9 @@ const BridgeUI: React.FC<BridgeUIProps> = ({
         </div>
         <button type="submit" disabled={isLoading}>
           {isLoading ? 'Bridging...' : 'Bridge Tokens'}
+        </button>
+        <button onClick={mintTokens} disabled={isLoading}>
+          Mint Test Tokens
         </button>
       </form>
     </div>
