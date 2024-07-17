@@ -46,8 +46,8 @@ const App: React.FC = () => {
   }, []); // Empty dependency array means this effect runs once on mount
 
   // Define contract addresses for Arbitrum and Optimism
-  const arbitrumContractAddress = 'MY_ARBITRUM_CONTRACT_ADDRESS';
-  const optimismContractAddress = 'MY_OPTIMISM_CONTRACT_ADDRESS';
+  const arbitrumContractAddress = '0x88D8934d048A2D24ab124E9Fa1A86Fb49ac8e81c';
+  const optimismContractAddress = '0x88D8934d048A2D24ab124E9Fa1A86Fb49ac8e81c';
 
   return (
     <div>
