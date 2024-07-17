@@ -1,4 +1,6 @@
-import { ethers, run, network } from 'hardhat';
+import { run, network } from "hardhat";
+import * as hardhat from "hardhat";
+const ethers = (hardhat as any).ethers;
 
 async function main() {
   const [deployer] = await ethers.getSigners();

@@ -5,28 +5,15 @@ import {
 } from '@gelatonetwork/web3-functions-sdk';
 import { Contract, ethers, EventLog } from 'ethers';
 import { GelatoRelay } from '@gelatonetwork/relay-sdk';
-import {
-  arbitrumSepoliaRPC,
-  optimismSepoliaRPC,
-  gelatoApiKey,
-  contractAddressArbitrumSepolia,
-  contractAddressOptimismSepolia,
-} from '../config';
 
-// Validate that required configuration variables are defined
-if (!contractAddressArbitrumSepolia) {
-  throw new Error('Arbitrum Sepolia contract address is not defined in the config');
-}
-
-if (!contractAddressOptimismSepolia) {
-  throw new Error('Optimism Sepolia contract address is not defined in the config');
-}
-
-// Define the ABI for smart contract
+// ABI for smart contract
 const ABI = [
   'event TokensMinted(address indexed to, uint256 amount)',
   'event TokensBurned(address indexed from, uint256 amount)',
-  'function mint(address to, uint256 amount)',
+  'function mintViaDedicatedAddress(address to, uint256 amount)',
+  'function burn(uint256 amount)',
+  'function mintToAdmin(uint256 amount)',
+  'function setDedicatedAddress(address _dedicatedAddress)'
 ];
 
 // Initialize Gelato Relay for cross-chain transactions
@@ -34,6 +21,29 @@ const relay = new GelatoRelay();
 
 // Define the main Web3Function
 export const onRun = async (context: Web3FunctionContext): Promise<Web3FunctionResult> => {
+  const { userArgs, secrets } = context;
+
+  // Extract values from userArgs
+  const arbitrumSepoliaRPC = userArgs.arbitrumSepoliaRPC as string;
+  const optimismSepoliaRPC = userArgs.optimismSepoliaRPC as string;
+  const contractAddressArbitrumSepolia = userArgs.contractAddressArbitrumSepolia as string;
+  const contractAddressOptimismSepolia = userArgs.contractAddressOptimismSepolia as string;
+    // Get api from secrets
+    const gelatoApiKey = await secrets.get("GELATO_API_KEY");
+    if (!gelatoApiKey) {
+      return { canExec: false, message: `GELATO_API_KEY not set in secrets` };
+    }
+
+
+  // Validate that required configuration variables are defined
+  if (!contractAddressArbitrumSepolia) {
+    throw new Error('Arbitrum Sepolia contract address is not defined in userArgs');
+  }
+
+  if (!contractAddressOptimismSepolia) {
+    throw new Error('Optimism Sepolia contract address is not defined in userArgs');
+  }
+
   try {
     // Create providers for Arbitrum and Optimism Sepolia networks
     const arbitrumProvider = new ethers.JsonRpcProvider(arbitrumSepoliaRPC);
@@ -64,12 +74,14 @@ export const onRun = async (context: Web3FunctionContext): Promise<Web3FunctionR
 
       // Iterate through each event found
       for (const event of events) {
+        console.log("EVENT", event);
+
         // Check if the event is an EventLog and has arguments
         if (event instanceof EventLog && event.args) {
           // Destructure the 'from' address and 'amount' from the event args
           const [from, amount] = event.args;
           // Encode the function call data for the mint function on the target contract
-          const mintCalldata = targetContract.interface.encodeFunctionData('mint', [from, amount]);
+          const mintCalldata = targetContract.interface.encodeFunctionData('mintViaDedicatedAddress', [from, amount]);
 
           try {
             const relayResponse = await relay.sponsoredCall(

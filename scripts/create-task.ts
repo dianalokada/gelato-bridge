@@ -9,9 +9,9 @@ async function createTask() {
     web3FunctionArgs: {
       // function arguments
     },
-    trigger: {
-      interval: 300, // Run every 5 minutes, for example
-    },
+    // trigger: {
+    //   interval: 300, // Run every 5 minutes, for example
+    // },
   });
 
   console.log(`Task created with ID: ${task.id}`);
