@@ -21,6 +21,7 @@ const relay = new GelatoRelay();
 
 // Define the main Web3Function
 export const onRun = async (context: Web3FunctionContext): Promise<Web3FunctionResult> => {
+  
   console.log('Starting onRun function');
   const { userArgs, secrets } = context;
   console.log('User args:', JSON.stringify(userArgs));
@@ -39,6 +40,13 @@ export const onRun = async (context: Web3FunctionContext): Promise<Web3FunctionR
   if (!gelatoApiKey) {
     return { canExec: false, message: `GELATO_API_KEY not set in secrets` };
   }
+
+  // Get the dedicated address from secrets or user args
+  const dedicatedAddress = await secrets.get("DEDICATED_ADDRESS") || userArgs.dedicatedAddress as string;
+  if (!dedicatedAddress) {
+    return { canExec: false, message: "Dedicated address not set in secrets or user args" };
+  }
+  console.log('Dedicated address:', dedicatedAddress);
 
   // Validate that required configuration variables are defined
   if (!contractAddressArbitrumSepolia) {
@@ -67,6 +75,13 @@ export const onRun = async (context: Web3FunctionContext): Promise<Web3FunctionR
       ABI,
       optimismProvider,
     );
+
+    // Get the dedicated address from secrets or user args
+    const dedicatedAddress = await secrets.get("DEDICATED_ADDRESS") || userArgs.dedicatedAddress as string;
+
+    if (!dedicatedAddress) {
+      return { canExec: false, message: "Dedicated address not set in secrets or user args" };
+    }
 
     const processEvents = async (
       sourceContract: Contract, // The contract to listen for events on

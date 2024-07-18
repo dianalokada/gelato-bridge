@@ -30,6 +30,11 @@ var onRun = async (context) => {
   if (!gelatoApiKey) {
     return { canExec: false, message: `GELATO_API_KEY not set in secrets` };
   }
+  const dedicatedAddress = await secrets.get("DEDICATED_ADDRESS") || userArgs.dedicatedAddress;
+  if (!dedicatedAddress) {
+    return { canExec: false, message: "Dedicated address not set in secrets or user args" };
+  }
+  console.log("Dedicated address:", dedicatedAddress);
   if (!contractAddressArbitrumSepolia) {
     throw new Error("Arbitrum Sepolia contract address is not defined in userArgs");
   }
@@ -51,6 +56,10 @@ var onRun = async (context) => {
       ABI,
       optimismProvider
     );
+    const dedicatedAddress2 = await secrets.get("DEDICATED_ADDRESS") || userArgs.dedicatedAddress;
+    if (!dedicatedAddress2) {
+      return { canExec: false, message: "Dedicated address not set in secrets or user args" };
+    }
     const processEvents = async (sourceContract, targetContract, targetChainId, targetAddress) => {
       console.log("Processing events for chain ID:", targetChainId.toString());
       const filter = sourceContract.filters.TokensBurned();
