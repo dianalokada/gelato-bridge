@@ -38,10 +38,41 @@
 .bridge-ui select,
 .bridge-ui button {
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.6em 1.2em; /* Match button padding */
   margin-top: 0.25rem;
+  font-size: 1em; /* Match button font size */
+  font-weight: 500; /* Match button font weight */
+  font-family: inherit; /* Use the inherited font family */
+  border-radius: 8px; /* Match button border-radius */
+  border: 1px solid transparent; /* Match button border */
+  background-color: #1a1a1a; /* Match button background color */
+  color: rgba(255, 255, 255, 0.87); /* Match text color from :root */
+  transition: border-color 0.25s; /* Match button transition */
+}
+
+.bridge-ui input:focus,
+.bridge-ui select:focus {
+  outline: none;
+  border-color: #646cff; /* Match button hover border color */
 }
 
 .bridge-ui button {
   margin-top: 1rem;
+  cursor: pointer;
+}
+
+/* Add hover effect to inputs and select */
+.bridge-ui input:hover,
+.bridge-ui select:hover {
+  border-color: #646cff;
+}
+
+/* Style for light mode */
+@media (prefers-color-scheme: light) {
+  .bridge-ui input,
+  .bridge-ui select,
+  .bridge-ui button {
+    background-color: #f9f9f9; /* Match button background in light mode */
+    color: #213547; /* Match text color in light mode */
+  }
 }

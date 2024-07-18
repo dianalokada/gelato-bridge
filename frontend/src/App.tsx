@@ -51,7 +51,6 @@ const App: React.FC = () => {
 
   return (
     <div>
-      <h1>Token Bridge</h1>
       {signer ? (
         // If signer is available, render the BridgeUI component
         <BridgeUI

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
+import './BridgeUI.css'; 
+
 
 // Define the props interface for the BridgeUI component
 interface BridgeUIProps {
@@ -100,7 +102,7 @@ const BridgeUI: React.FC<BridgeUIProps> = ({
     <div className="bridge-ui">
       <form onSubmit={handleBridge}>
         <div>
-          <label>Amount to Bridge:</label>
+          <label>Amount to Send:</label>
           <input
             type="text"
             value={amount}
