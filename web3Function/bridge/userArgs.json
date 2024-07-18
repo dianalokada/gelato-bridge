@@ -1,6 +1,6 @@
 {
-    "arbitrumSepoliaRPC": "https://sepolia-rollup.arbitrum.io/rpc",
-    "optimismSepoliaRPC": "https://sepolia.optimism.io",
-    "contractAddressArbitrumSepolia": "0x39C410eFE75DDfdBe4Be5455A7b368a533da15E1",
-    "contractAddressOptimismSepolia": "0x39C410eFE75DDfdBe4Be5455A7b368a533da15E1"
-  }
+  "arbitrumSepoliaRPC": "https://sepolia-rollup.arbitrum.io/rpc",
+  "optimismSepoliaRPC": "https://sepolia.optimism.io",
+  "contractAddressArbitrumSepolia": "0x39C410eFE75DDfdBe4Be5455A7b368a533da15E1",
+  "contractAddressOptimismSepolia": "0x39C410eFE75DDfdBe4Be5455A7b368a533da15E1"
+}

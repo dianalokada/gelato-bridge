@@ -1,8 +1,8 @@
 import { HardhatUserConfig } from 'hardhat/config';
 import '@nomicfoundation/hardhat-chai-matchers';
 import '@gelatonetwork/web3-functions-sdk/hardhat-plugin';
-import "@nomicfoundation/hardhat-ethers";
-import "@nomicfoundation/hardhat-toolbox";
+import '@nomicfoundation/hardhat-ethers';
+import '@nomicfoundation/hardhat-toolbox';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -14,7 +14,7 @@ const config: HardhatUserConfig = {
         version: '0.8.20',
       },
       {
-    version: '0.8.19',
+        version: '0.8.19',
       },
     ],
     settings: {
@@ -38,18 +38,18 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey: {
       sepolia: process.env.ETHERSCAN_API_KEY!,
-      optimismSepolia: process.env.OPTIMISM_API_KEY!, 
+      optimismSepolia: process.env.OPTIMISM_API_KEY!,
     },
     customChains: [
       {
-        network: "optimismSepolia",
+        network: 'optimismSepolia',
         chainId: 11155420,
         urls: {
-          apiURL: "https://api-sepolia-optimism.etherscan.io/api",
-          browserURL: "https://sepolia-optimism.etherscan.io/"
-        }
-      }
-    ]
+          apiURL: 'https://api-sepolia-optimism.etherscan.io/api',
+          browserURL: 'https://sepolia-optimism.etherscan.io/',
+        },
+      },
+    ],
   },
   w3f: {
     rootDir: './web3Function',

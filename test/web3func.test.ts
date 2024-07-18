@@ -1,10 +1,10 @@
-import { expect } from "chai";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { ethers } from "ethers";
-import "hardhat/types/runtime";
-import { Web3Function } from "@gelatonetwork/web3-functions-sdk";
+import { expect } from 'chai';
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import { ethers } from 'ethers';
+import 'hardhat/types/runtime';
+import { Web3Function } from '@gelatonetwork/web3-functions-sdk';
 
-declare module "hardhat/types/runtime" {
+declare module 'hardhat/types/runtime' {
   export interface HardhatRuntimeEnvironment {
     w3f: {
       get: (name: string) => Web3Function;
@@ -12,7 +12,7 @@ declare module "hardhat/types/runtime" {
   }
 }
 
-describe("Cross-Chain Token Bridge Web3 Function", function () {
+describe('Cross-Chain Token Bridge Web3 Function', function () {
   let owner: ethers.Signer;
   let user: ethers.Signer;
   let arbitrumContract: ethers.Contract;
@@ -28,28 +28,28 @@ describe("Cross-Chain Token Bridge Web3 Function", function () {
   ];
 
   before(async function () {
-    hre = require("hardhat");
+    hre = require('hardhat');
     [owner, user] = await hre.ethers.getSigners();
 
     // Deploy mock contracts for Arbitrum and Optimism
-    const MockToken = await hre.ethers.getContractFactory("MockToken");
+    const MockToken = await hre.ethers.getContractFactory('MockToken');
     arbitrumContract = await MockToken.deploy();
     optimismContract = await MockToken.deploy();
 
     // Setup Web3 Function
     const { w3f } = hre;
-    bridgeW3f = w3f.get("CrossChainTokenBridge");
+    bridgeW3f = w3f.get('CrossChainTokenBridge');
   });
 
-  it("should process TokensBurned events and relay mint transactions", async function () {
+  it('should process TokensBurned events and relay mint transactions', async function () {
     // Simulate burning tokens on Arbitrum
-    await arbitrumContract.burn(await user.getAddress(), hre.ethers.parseEther("100"));
+    await arbitrumContract.burn(await user.getAddress(), hre.ethers.parseEther('100'));
 
     // Prepare user arguments
     const userArgs = {
-      arbitrumSepoliaRPC: "http://localhost:8545", // Use Hardhat's local network
-      optimismSepoliaRPC: "http://localhost:8545", // Use Hardhat's local network
-      gelatoApiKey: "mock-api-key",
+      arbitrumSepoliaRPC: 'http://localhost:8545', // Use Hardhat's local network
+      optimismSepoliaRPC: 'http://localhost:8545', // Use Hardhat's local network
+      gelatoApiKey: 'mock-api-key',
       contractAddressArbitrumSepolia: await arbitrumContract.getAddress(),
       contractAddressOptimismSepolia: await optimismContract.getAddress(),
     };
@@ -59,13 +59,13 @@ describe("Cross-Chain Token Bridge Web3 Function", function () {
 
     // Check the result
     expect(result.canExec).to.be.false;
-    expect(result.message).to.equal("Processed events and relayed transactions");
+    expect(result.message).to.equal('Processed events and relayed transactions');
 
     // Verify that tokens were minted on Optimism
     const mintedEvent = await optimismContract.queryFilter(optimismContract.filters.TokensMinted());
     expect(mintedEvent.length).to.equal(1);
     expect(mintedEvent[0].args?.to).to.equal(await user.getAddress());
-    expect(mintedEvent[0].args?.amount).to.equal(hre.ethers.parseEther("100"));
+    expect(mintedEvent[0].args?.amount).to.equal(hre.ethers.parseEther('100'));
   });
 
   // Add more tests as needed

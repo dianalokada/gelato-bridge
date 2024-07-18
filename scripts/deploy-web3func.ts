@@ -13,7 +13,7 @@ async function main() {
         const cid = await Web3FunctionUploader.upload(
           buildResult.filePath,
           JSON.stringify(buildResult.schema), // Convert schema to string
-          JSON.stringify({ metadata: { ...buildResult } }) // Convert metadata to string
+          JSON.stringify({ metadata: { ...buildResult } }), // Convert metadata to string
         );
         console.log(`Web3 Function deployed with CID: ${cid}`);
       } catch (uploadError) {

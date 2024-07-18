@@ -1,5 +1,5 @@
-import { run, network } from "hardhat";
-import * as hardhat from "hardhat";
+import { run, network } from 'hardhat';
+import * as hardhat from 'hardhat';
 const ethers = (hardhat as any).ethers;
 
 async function main() {
