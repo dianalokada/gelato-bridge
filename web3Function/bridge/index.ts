@@ -21,6 +21,21 @@ const relay = new GelatoRelay();
 
 // Define the main Web3Function
 export const onRun = async (context: Web3FunctionContext): Promise<Web3FunctionResult> => {
+
+  async function retryRelay(relayFunction, maxRetries = 3) {
+    for (let i = 0; i < maxRetries; i++) {
+      try {
+        return await relayFunction();
+      } catch (error) {
+        if (error.message.includes("Too many requests") && i < maxRetries - 1) {
+          console.log(`Rate limited, retrying in ${2 ** i} seconds...`);
+          await new Promise(resolve => setTimeout(resolve, 1000 * 2 ** i));
+        } else {
+          throw error;
+        }
+      }
+    }
+  }
   
   console.log('Starting onRun function');
   const { userArgs, secrets } = context;
@@ -76,13 +91,6 @@ export const onRun = async (context: Web3FunctionContext): Promise<Web3FunctionR
       optimismProvider,
     );
 
-    // Get the dedicated address from secrets or user args
-    const dedicatedAddress = await secrets.get("DEDICATED_ADDRESS") || userArgs.dedicatedAddress as string;
-
-    if (!dedicatedAddress) {
-      return { canExec: false, message: "Dedicated address not set in secrets or user args" };
-    }
-
     const processEvents = async (
       sourceContract: Contract, // The contract to listen for events on
       targetContract: Contract, // The target Contract
@@ -90,22 +98,24 @@ export const onRun = async (context: Web3FunctionContext): Promise<Web3FunctionR
       targetAddress: string, // The address of the target contract
     ) => {
       console.log('Processing events for chain ID:', targetChainId.toString());
+      const startBlock = -10000;
       // Create a filter for TokensBurned events
       const filter = sourceContract.filters.TokensBurned();
       // Query the last 1000 blocks for TokensBurned events
       console.log('Querying events');
-      const events = await sourceContract.queryFilter(filter, -1000, 'latest');
+      const events = await sourceContract.queryFilter(filter, startBlock, 'latest');
       console.log('Number of events found:', events.length);
-
-      // Iterate through each event found
-      for (const event of events) {
-        console.log('EVENT', event);
-
-        // Check if the event is an EventLog and has arguments
-        if (event instanceof EventLog && event.args) {
-          // Destructure the 'from' address and 'amount' from the event args
-          const [from, amount] = event.args;
-          // Encode the function call data for the mint function on the target contract
+      
+      if (events.length > 0) {
+        // Sort events by block number in descending order
+        const sortedEvents = events.sort((a, b) => b.blockNumber - a.blockNumber);
+        
+        // Get the most recent event
+        const latestEvent = sortedEvents[0];
+        console.log('Processing latest event:', latestEvent);
+    
+        if (latestEvent instanceof EventLog && latestEvent.args) {
+          const [from, amount] = latestEvent.args;
           const mintCalldata = targetContract.interface.encodeFunctionData(
             'mintViaDedicatedAddress',
             [from, amount],
@@ -113,14 +123,14 @@ export const onRun = async (context: Web3FunctionContext): Promise<Web3FunctionR
 
           try {
             console.log('Calling relay.sponsoredCall');
-            const relayResponse = await relay.sponsoredCall(
+            const relayResponse = await retryRelay(() => relay.sponsoredCall(
               {
                 chainId: targetChainId,
                 target: targetAddress,
                 data: mintCalldata,
               },
               gelatoApiKey,
-            );
+            ));
             console.log(`Relay response: ${relayResponse.taskId}`);
           } catch (error) {
             console.error('Error relaying transaction:', error);

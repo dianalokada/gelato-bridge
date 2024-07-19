@@ -24,11 +24,12 @@ const BridgeUI: React.FC<BridgeUIProps> = ({
 
   // ABI for the smart contract
   const ABI = [
-    'function burn(uint256 amount)',
-    'function mint(address to, uint256 amount)',
-    'function mintToAdmin(uint256 amount)',
-    'event TokensBurned(address indexed from, uint256 amount)',
     'event TokensMinted(address indexed to, uint256 amount)',
+    'event TokensBurned(address indexed from, uint256 amount)',
+    'function mintViaDedicatedAddress(address to, uint256 amount)',
+    'function burn(uint256 amount)',
+    'function mintToAdmin(uint256 amount)',
+    'function setDedicatedAddress(address _dedicatedAddress)',
   ];
 
   // Determine the source contract address based on the selected chain
@@ -107,7 +108,7 @@ const BridgeUI: React.FC<BridgeUIProps> = ({
             type="text"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            placeholder="0.0"
+            placeholder="0.0 Tokens"
           />
         </div>
         <div>

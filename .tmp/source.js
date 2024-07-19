@@ -14,6 +14,20 @@ var ABI = [
 ];
 var relay = new GelatoRelay();
 var onRun = async (context) => {
+  async function retryRelay(relayFunction, maxRetries = 3) {
+    for (let i = 0; i < maxRetries; i++) {
+      try {
+        return await relayFunction();
+      } catch (error) {
+        if (error.message.includes("Too many requests") && i < maxRetries - 1) {
+          console.log(`Rate limited, retrying in ${2 ** i} seconds...`);
+          await new Promise((resolve) => setTimeout(resolve, 1e3 * 2 ** i));
+        } else {
+          throw error;
+        }
+      }
+    }
+  }
   console.log("Starting onRun function");
   const { userArgs, secrets } = context;
   console.log("User args:", JSON.stringify(userArgs));
@@ -56,34 +70,33 @@ var onRun = async (context) => {
       ABI,
       optimismProvider
     );
-    const dedicatedAddress2 = await secrets.get("DEDICATED_ADDRESS") || userArgs.dedicatedAddress;
-    if (!dedicatedAddress2) {
-      return { canExec: false, message: "Dedicated address not set in secrets or user args" };
-    }
     const processEvents = async (sourceContract, targetContract, targetChainId, targetAddress) => {
       console.log("Processing events for chain ID:", targetChainId.toString());
+      const startBlock = -1e4;
       const filter = sourceContract.filters.TokensBurned();
       console.log("Querying events");
-      const events = await sourceContract.queryFilter(filter, -1e3, "latest");
+      const events = await sourceContract.queryFilter(filter, startBlock, "latest");
       console.log("Number of events found:", events.length);
-      for (const event of events) {
-        console.log("EVENT", event);
-        if (event instanceof EventLog && event.args) {
-          const [from, amount] = event.args;
+      if (events.length > 0) {
+        const sortedEvents = events.sort((a, b) => b.blockNumber - a.blockNumber);
+        const latestEvent = sortedEvents[0];
+        console.log("Processing latest event:", latestEvent);
+        if (latestEvent instanceof EventLog && latestEvent.args) {
+          const [from, amount] = latestEvent.args;
           const mintCalldata = targetContract.interface.encodeFunctionData(
             "mintViaDedicatedAddress",
             [from, amount]
           );
           try {
             console.log("Calling relay.sponsoredCall");
-            const relayResponse = await relay.sponsoredCall(
+            const relayResponse = await retryRelay(() => relay.sponsoredCall(
               {
                 chainId: targetChainId,
                 target: targetAddress,
                 data: mintCalldata
               },
               gelatoApiKey
-            );
+            ));
             console.log(`Relay response: ${relayResponse.taskId}`);
           } catch (error) {
             console.error("Error relaying transaction:", error);
