@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
 import './BridgeUI.css'; 
-
+import logo from './assets/gelato2.png';
 
 // Define the props interface for the BridgeUI component
 interface BridgeUIProps {
@@ -101,6 +101,7 @@ const BridgeUI: React.FC<BridgeUIProps> = ({
 
   return (
     <div className="bridge-ui">
+      <img src={logo} alt="Logo" className="bridge-logo" />
       <form onSubmit={handleBridge}>
         <div>
           <label>Amount to Send:</label>
