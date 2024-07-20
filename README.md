@@ -45,20 +45,25 @@ Compile the contrac
 npx hardhat compile
 ```
 
-## Deploy the contracts on arbitrumSepolia and optimismSepolia:
+## Deploy the contracts on arbitrumSepolia and optimismSepolia
 
 ```bash
 npx hardhat run scripts/deploy.ts --network arbitrumSepolia
 npx hardhat run scripts/deploy.ts --network optimismSepolia
 ```
 
-## Create a `.env` file in the root directory and add your contract addresses and privite key:
+## Create a `.env` file in the root directory and add your contract addresses and privite key
 
 ```bash
 CONTRACT_ADDRESS_ARBITRUM_SEPOLIA=0x...
 CONTRACT_ADDRESS_OPTIMISM_SEPOLIA=0x....
 PRIVATE_KEY=...
 ```
+
+## Smart Contracts block explorers
+
+- Arbitrum Sepolia: https://sepolia.arbiscan.io/
+- Optimism Sepolia: https://sepolia-optimism.etherscan.io/
 
 # Frontend Quick Start
 
@@ -80,45 +85,32 @@ Run the frontend
 npm run dev
 ```
 
-## Update contract addresses in the App.tsx:
+## Update contract addresses in the App.tsx
 
 Replace `MY_ARBITRUM_CONTRACT_ADDRESS` and `MY_OPTIMISM_CONTRACT_ADDRESS` with the actual deployed contract addresses.
 
-## Configure MetaMask:
+## Configure MetaMask
 
 - Add Arbitrum Sepolia and Optimism Sepolia networks to MetaMask.
 - Fund your MetaMask account with testnet tokens for both networks.
 
-## Open your browser and navigate to `http://localhost:5173`
+## Open your browser and navigate to http://localhost:5173
 
 Connect your Web3 wallet (ensure you're on either Arbitrum Sepolia or Optimism Sepolia network)
 
 - First, use the "Mint Test Tokens" button to mint ERC20 tokens for testing
 - After, enter the amount you want to bridge and click "Bridge Tokens"
 
-## Smart Contracts
-
-- Arbitrum Sepolia Contract: https://sepolia.arbiscan.io/
-- Optimism Sepolia Contract: https://sepolia-optimism.etherscan.io/
-
 ## Web3 Function
 
-The Web3 Function code is located in `web3Function/web3Func.ts`. It listens for `TokensBurned` events on both networks and mints corresponding tokens on the destination chain.
+The Web3 Function code is located in `web3Function/bridge/index.ts`. It listens for `TokensBurned` events on both networks and mints corresponding tokens on the destination chain.
 
-## Testing
-
-To run the tests:
-
-```bash
-npm test
-```
-
-## Interact with the UI:
+## Interact with the UI
 
 - Connect MetaMask to your app.
 - Switch between Arbitrum Sepolia and Optimism Sepolia in MetaMask to test bridging from both directions.
 
-## Test the bridge:
+## Test the bridge
 
 - Mint tokens before bridging
 - Input an amount to bridge
@@ -126,7 +118,7 @@ npm test
 - Click "Bridge Tokens"
 - Approve the transaction in MetaMask
 
-## Verify the result:
+## Verify the result
 
 - Check that tokens were burned on the source chain
 - Switch to the destination chain in MetaMask

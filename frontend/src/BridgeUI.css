@@ -1,101 +1,100 @@
 .bridge-ui {
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
-    text-align: center;
-    padding-top: 2rem;
-  }
-  
-  .bridge-ui form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    align-items: center;
-    width: 100%;
-  }
-  
-  .bridge-ui div {
-    width: 100%;
-    margin-bottom: 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .bridge-ui label {
-    margin-bottom: 0.5rem;
-  }
-  
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: center;
+  padding-top: 2rem;
+}
+
+.bridge-ui form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-items: center;
+  width: 100%;
+}
+
+.bridge-ui div {
+  width: 100%;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bridge-ui label {
+  margin-bottom: 0.5rem;
+}
+
+.bridge-ui input,
+.bridge-ui select,
+.bridge-ui button {
+  width: 100%;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background-color: #1a1a1a;
+  color: rgba(255, 255, 255, 0.87);
+  transition: border-color 0.25s;
+  box-sizing: border-box;
+  border-radius: 50px;
+}
+
+.bridge-ui button {
+  background-color: #ffab9a;
+  color: #1a1a1a;
+}
+
+.bridge-ui button:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s ease-in-out;
+}
+
+.bridge-ui input:focus,
+.bridge-ui select:focus,
+.bridge-ui button:focus {
+  outline: none;
+  border-color: #ffab9a;
+}
+
+.bridge-ui input:hover,
+.bridge-ui select:hover,
+.bridge-ui button:hover {
+  border-color: #ffab9a;
+}
+
+.bridge-ui button {
+  margin-top: 1rem;
+  cursor: pointer;
+}
+
+.bridge-ui button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bridge-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.bridge-logo {
+  width: 150px;
+  height: auto;
+  margin-bottom: 2rem;
+}
+
+/* Style for light mode */
+@media (prefers-color-scheme: light) {
   .bridge-ui input,
   .bridge-ui select,
   .bridge-ui button {
-    width: 100%;
-    padding: 0.6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    border-radius: 8px;
-    border: 1px solid transparent;
-    background-color: #1a1a1a;
-    color: rgba(255, 255, 255, 0.87);
-    transition: border-color 0.25s;
-    box-sizing: border-box;
-    border-radius: 50px;
+    background-color: #f9f9f9;
+    color: #213547;
   }
-
-  .bridge-ui button {
-    background-color: #FFAB9A;
-    color: #1a1a1a
-  }
-
-  .bridge-ui button:hover {
-    transform: scale(1.05);
-    transition: transform 0.2s ease-in-out; 
-  }
-  
-  .bridge-ui input:focus,
-  .bridge-ui select:focus,
-  .bridge-ui button:focus {
-    outline: none;
-    border-color: #FFAB9A;
-  }
-  
-  .bridge-ui input:hover,
-  .bridge-ui select:hover,
-  .bridge-ui button:hover {
-    border-color: #FFAB9A;
-  }
-  
-  .bridge-ui button {
-    margin-top: 1rem;
-    cursor: pointer;
-  }
-  
-  .bridge-ui button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .bridge-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-  }
-  
-  .bridge-logo {
-    width: 150px; 
-    height: auto;
-    margin-bottom: 2rem; 
-  }
-
-  
-  /* Style for light mode */
-  @media (prefers-color-scheme: light) {
-    .bridge-ui input,
-    .bridge-ui select,
-    .bridge-ui button {
-      background-color: #f9f9f9;
-      color: #213547;
-    }
-  }
+}

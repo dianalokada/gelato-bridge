@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
-import './BridgeUI.css'; 
+import './BridgeUI.css';
 import logo from './assets/gelato2.png';
 
 // Define the props interface for the BridgeUI component
