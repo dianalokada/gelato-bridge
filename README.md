@@ -37,37 +37,64 @@ Install dependencies:
 npm install
 ```
 
-## Deploy the contracts:
+# Contracts Quick Start
+
+Compile the contrac
+
+```bash
+npx hardhat compile
+```
+
+## Deploy the contracts on arbitrumSepolia and optimismSepolia:
 
 ```bash
 npx hardhat run scripts/deploy.ts --network arbitrumSepolia
 npx hardhat run scripts/deploy.ts --network optimismSepolia
 ```
 
-## Create a `.env` file in the root directory and add your contract addresses:
+## Create a `.env` file in the root directory and add your contract addresses and privite key:
 
 ```bash
 CONTRACT_ADDRESS_ARBITRUM_SEPOLIA=0x...
 CONTRACT_ADDRESS_OPTIMISM_SEPOLIA=0x....
+PRIVATE_KEY=...
 ```
 
-## Nacigate to `cd frontend` and start the development server:
+# Frontend Quick Start
+
+From the project root, navigate to the frontend folder:
 
 ```bash
-npm start
+cd frontend
+```
+
+Install project dependencies
+
+```bash
+npm install
+```
+
+Run the frontend
+
+```bash
+npm run dev
 ```
 
 ## Update contract addresses in the App.tsx:
 
-Replace 'MY_ARBITRUM_CONTRACT_ADDRESS' and 'MY_OPTIMISM_CONTRACT_ADDRESS' with the actual deployed contract addresses.
+Replace `MY_ARBITRUM_CONTRACT_ADDRESS` and `MY_OPTIMISM_CONTRACT_ADDRESS` with the actual deployed contract addresses.
+
+## Configure MetaMask:
+
+- Add Arbitrum Sepolia and Optimism Sepolia networks to MetaMask.
+- Fund your MetaMask account with testnet tokens for both networks.
 
 ## Open your browser and navigate to `http://localhost:5173`
 
 Connect your Web3 wallet (ensure you're on either Arbitrum Sepolia or Optimism Sepolia network)
 
-Use the "Mint Test Tokens" button to mint tokens for testing
-
-Enter the amount you want to bridge and click "Bridge Tokens"
+- First, use the "Mint Test Tokens" button to mint ERC20 tokens for testing
+- After, enter the amount you want to bridge and click "Bridge Tokens"
 
 ## Smart Contracts
 
@@ -85,11 +112,6 @@ To run the tests:
 ```bash
 npm test
 ```
-
-## Configure MetaMask:
-
-- Add Arbitrum Sepolia and Optimism Sepolia networks to MetaMask.
-- Fund your MetaMask account with testnet tokens for both networks.
 
 ## Interact with the UI:
 
