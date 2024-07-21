@@ -38,17 +38,11 @@ export const onRun = async (context: Web3FunctionContext): Promise<Web3FunctionR
 
   console.log('Starting onRun function');
   const { userArgs, secrets } = context;
-  console.log('User args:', JSON.stringify(userArgs));
   // Extract values from userArgs
   const arbitrumSepoliaRPC = userArgs.arbitrumSepoliaRPC as string;
   const optimismSepoliaRPC = userArgs.optimismSepoliaRPC as string;
   const contractAddressArbitrumSepolia = userArgs.contractAddressArbitrumSepolia as string;
   const contractAddressOptimismSepolia = userArgs.contractAddressOptimismSepolia as string;
-  console.log('RPC URLs:', { arbitrumSepoliaRPC, optimismSepoliaRPC });
-  console.log('Contract addresses:', {
-    contractAddressArbitrumSepolia,
-    contractAddressOptimismSepolia,
-  });
   // Get api from secrets
   const gelatoApiKey = await secrets.get('GELATO_API_KEY');
   if (!gelatoApiKey) {
@@ -73,12 +67,10 @@ export const onRun = async (context: Web3FunctionContext): Promise<Web3FunctionR
   }
 
   try {
-    console.log('Creating providers');
     // Create providers for Arbitrum and Optimism Sepolia networks
     const arbitrumProvider = new ethers.JsonRpcProvider(arbitrumSepoliaRPC);
     const optimismProvider = new ethers.JsonRpcProvider(optimismSepoliaRPC);
 
-    console.log('Creating contract instances');
     // Create contract instances
     const arbitrumContract = new Contract(
       contractAddressArbitrumSepolia as string,
@@ -102,7 +94,6 @@ export const onRun = async (context: Web3FunctionContext): Promise<Web3FunctionR
       // Create a filter for TokensBurned events
       const filter = sourceContract.filters.TokensBurned();
       // Query the last 1000 blocks for TokensBurned events
-      console.log('Querying events');
       const events = await sourceContract.queryFilter(filter, startBlock, 'latest');
       console.log('Number of events found:', events.length);
 
@@ -112,7 +103,6 @@ export const onRun = async (context: Web3FunctionContext): Promise<Web3FunctionR
 
         // Get the most recent event
         const latestEvent = sortedEvents[0];
-        console.log('Processing latest event:', latestEvent);
 
         if (latestEvent instanceof EventLog && latestEvent.args) {
           const [from, amount] = latestEvent.args;
@@ -141,14 +131,12 @@ export const onRun = async (context: Web3FunctionContext): Promise<Web3FunctionR
       }
     };
 
-    console.log('Processing Arbitrum events');
     await processEvents(
       arbitrumContract,
       optimismContract,
       BigInt(11155420),
       contractAddressOptimismSepolia as string,
     ); // Optimism Sepolia chain ID
-    console.log('Processing Optimism events');
     await processEvents(
       optimismContract,
       arbitrumContract,

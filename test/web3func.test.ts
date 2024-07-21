@@ -20,12 +20,14 @@ describe('Cross-Chain Token Bridge Web3 Function', function () {
   let bridgeW3f: any;
   let hre: HardhatRuntimeEnvironment;
 
-  const ABI = [
-    'event TokensMinted(address indexed to, uint256 amount)',
-    'event TokensBurned(address indexed from, uint256 amount)',
-    'function mint(address to, uint256 amount)',
-    'function burn(address from, uint256 amount)',
-  ];
+const ABI = [
+  'event TokensMinted(address indexed to, uint256 amount)',
+  'event TokensBurned(address indexed from, uint256 amount)',
+  'function mintViaDedicatedAddress(address to, uint256 amount)',
+  'function burn(uint256 amount)',
+  'function mintToAdmin(uint256 amount)',
+  'function setDedicatedAddress(address _dedicatedAddress)',
+];
 
   before(async function () {
     hre = require('hardhat');
@@ -38,7 +40,7 @@ describe('Cross-Chain Token Bridge Web3 Function', function () {
 
     // Setup Web3 Function
     const { w3f } = hre;
-    bridgeW3f = w3f.get('CrossChainTokenBridge');
+    bridgeW3f = w3f.get('bridge');
   });
 
   it('should process TokensBurned events and relay mint transactions', async function () {
