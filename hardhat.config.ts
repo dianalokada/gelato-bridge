@@ -63,7 +63,7 @@ const config: HardhatUserConfig = {
   w3f: {
     rootDir: './web3Function',
     debug: false,
-    networks: ['arbitrumSepolia', 'optimismSepolia'],
+    networks: ['optimismSepolia'],
   },
 };
 
