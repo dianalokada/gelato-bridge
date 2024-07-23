@@ -1,0 +1,14 @@
+{
+  "blockNumber": 65866312,
+  "blockHash": "0x6794a56583329794f184d50862019ecf7b6d8ba6b3210f68ca4b91a8fa81817d",
+  "transactionIndex": 1,
+  "removed": false,
+  "address": "0x39C410eFE75DDfdBe4Be5455A7b368a533da15E1",
+  "data": "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000",
+  "topics": [
+    "0xfd38818f5291bf0bb3a2a48aadc06ba8757865d1dabd804585338aab3009dcb6",
+    "0x000000000000000000000000eec2ba9b9f0202c63bba29ea9a4ce5c23f9865fd"
+  ],
+  "transactionHash": "0x999ee6bca1971737186eba86453259e90a00bb3865cb92cae7a3c30aa8b65f09",
+  "logIndex": 0
+}

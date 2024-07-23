@@ -7,6 +7,8 @@
     "arbitrumSepoliaRPC": "string",
     "optimismSepoliaRPC": "string",
     "contractAddressArbitrumSepolia": "string",
-    "contractAddressOptimismSepolia": "string"
+    "contractAddressOptimismSepolia": "string",
+    "optimismChainID": "number",
+    "arbitrumChainID": "number"
   }
 }
