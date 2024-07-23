@@ -1,7 +1,4 @@
-import {
-  Web3Function,
-  Web3FunctionEventContext
-} from '@gelatonetwork/web3-functions-sdk';
+import { Web3Function, Web3FunctionEventContext } from '@gelatonetwork/web3-functions-sdk';
 import { Contract } from 'ethers';
 import { GelatoRelay } from '@gelatonetwork/relay-sdk';
 import { Interface } from '@ethersproject/abi';
@@ -14,7 +11,7 @@ const relay = new GelatoRelay();
 
 // Define the main Web3Function
 Web3Function.onRun(async (context: Web3FunctionEventContext) => {
-    console.log('Starting onRun function');
+  console.log('Starting onRun function');
   const { userArgs, secrets, log, gelatoArgs } = context;
 
   if (!log) {
@@ -29,7 +26,12 @@ Web3Function.onRun(async (context: Web3FunctionEventContext) => {
     // Handle event data
     const { from, amount } = event.args;
 
-    console.log(`Burning event detected from ${from}`);
+    // Ensure amount is a BigInt
+    const amountBigInt = BigInt(amount);
+
+    console.log(
+      `MockERC20.Burn event detected on ChainA. From: ${from} Amount: ${amountBigInt.toString()}`,
+    );
 
     // Get api from secrets
     const gelatoApiKey = await secrets.get('GELATO_API_KEY');
@@ -37,34 +39,39 @@ Web3Function.onRun(async (context: Web3FunctionEventContext) => {
       return { canExec: false, message: `GELATO_API_KEY not set in secrets` };
     }
 
+    const contractAddressArbitrumSepolia = userArgs.contractAddressArbitrumSepolia as string;
+    const contractAddressOptimismSepolia = userArgs.contractAddressOptimismSepolia as string;
     const arbitrumChainID = Number(userArgs.arbitrumChainID);
     const optimismChainID = Number(userArgs.optimismChainID);
-
     let sourceChainId = Number(gelatoArgs.chainId);
     console.log('Source Chain ID from gelatoArgs:', sourceChainId);
 
     // Check if the sourceChainId is one of the expected chain IDs
-    if (sourceChainId !== arbitrumChainID && sourceChainId !== optimismChainID) {
-      console.log('Unexpected source chain ID. Defaulting to Arbitrum Sepolia.');
-      sourceChainId = arbitrumChainID;
-    }
+    // if (sourceChainId !== arbitrumChainID && sourceChainId !== optimismChainID) {
+    //   console.log('Unexpected source chain ID. Defaulting to Arbitrum Sepolia.');
+    //   sourceChainId = arbitrumChainID;
+    // }
 
-    function getTargetChainId(sourceChainId: number): number {
-      console.log('getTargetChainId input:', sourceChainId);
+    function getTargetChainIdAndContract(sourceChainId: number): {
+      chainId: number;
+      contractAddress: string;
+    } {
       if (sourceChainId === arbitrumChainID) {
-        return optimismChainID;
+        return { chainId: optimismChainID, contractAddress: contractAddressOptimismSepolia };
       } else if (sourceChainId === optimismChainID) {
-        return arbitrumChainID;
+        return { chainId: arbitrumChainID, contractAddress: contractAddressArbitrumSepolia };
       } else {
-        console.log('Unexpected sourceChainId. Defaulting to Optimism Sepolia.');
-        return optimismChainID;
+        console.log('Unexpected sourceChainId. Defaulting to Arbitrum Sepolia.');
+        return { chainId: arbitrumChainID, contractAddress: contractAddressOptimismSepolia };
       }
     }
 
-    const targetChainId = getTargetChainId(sourceChainId);
-    // console.log('Target Chain ID:', targetChainId);
+    const { chainId: targetChainId, contractAddress: targetContractAddress } =
+      getTargetChainIdAndContract(sourceChainId);
+    console.log(`Target Chain ID: ${targetChainId}`);
+    console.log(`Target Contract Address: ${targetContractAddress}`);
 
-    const targetContract = new Contract('0x39C410eFE75DDfdBe4Be5455A7b368a533da15E1', [
+    const targetContract = new Contract(targetContractAddress, [
       'function mintViaDedicatedAddress(address to, uint256 amount)',
     ]);
 
@@ -76,19 +83,22 @@ Web3Function.onRun(async (context: Web3FunctionEventContext) => {
       amountString,
     ]);
 
-    console.log('Mint Calldata:', mintCalldata);
+    console.log('Prepered Mint Calldata for Chain B:', mintCalldata);
     console.log('Target Chain ID:', targetChainId);
-    
+
     try {
+      console.log('Initiating relay call to mint tokens on ChainB');
       const relayResponse = await relay.sponsoredCall(
         {
           chainId: BigInt(targetChainId),
-          target: '0x39C410eFE75DDfdBe4Be5455A7b368a533da15E1',
+          target: targetContractAddress,
           data: mintCalldata,
         },
         gelatoApiKey,
       );
-      console.log('Relay is responding:', relayResponse);
+      console.log(`Relay call successful, Task ID: ${relayResponse.taskId}`);
+      // the actual minting is async, so we can't confirm it here
+      console.log('MockERC20.Mint transaction submitted to ChainB, check ChainB explorer');
     } catch (error) {
       console.error('Error in relay call:', error);
       return { canExec: false, message: `Error in relay call: ${error.message}` };
@@ -100,6 +110,3 @@ Web3Function.onRun(async (context: Web3FunctionEventContext) => {
     return { canExec: false, message: `Unexpected error: ${error.message}` };
   }
 });
-
-// Pass the onRun function to the Web3Function.onRun method
-// Web3Function.onRun(onRun);
