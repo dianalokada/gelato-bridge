@@ -28,6 +28,7 @@ const config: HardhatUserConfig = {
     arbitrumSepolia: {
       url: process.env.ARBITRUM_SEPOLIA_RPC_URL,
       accounts: [process.env.PRIVATE_KEY!],
+      chainId: 421614, // Arbitrum Sepolia chain ID
     },
     optimismSepolia: {
       url: process.env.OPTIMISM_SEPOLIA_RPC_URL,
@@ -63,7 +64,7 @@ const config: HardhatUserConfig = {
   w3f: {
     rootDir: './web3Function',
     debug: false,
-    networks: ['optimismSepolia'],
+    networks: ['optimismSepolia', 'arbitrumSepolia'],
   },
 };
 

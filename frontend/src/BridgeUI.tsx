@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import ky from 'ky';
 import './BridgeUI.css';
 import logo from './assets/gelato2.png';
 
@@ -10,6 +9,10 @@ interface BridgeUIProps {
   optimismContractAddress: string;
 }
 
+const isNetworkError = (error: unknown): error is { code: string } => {
+  return typeof error === 'object' && error !== null && 'code' in error;
+};
+
 const BridgeUI: React.FC<BridgeUIProps> = ({
   signer,
   arbitrumContractAddress,
@@ -17,108 +20,116 @@ const BridgeUI: React.FC<BridgeUIProps> = ({
 }) => {
   const [amount, setAmount] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [currentChainId, setCurrentChainId] = useState<string>('');
   const [sourceChainId, setSourceChainId] = useState<string>('421614');
-  const [targetChainId, setTargetChainId] = useState<string>('11155420');
+  const [destChainId, setDestChainId] = useState<string>('11155420');
 
   const ABI = [
+    'event TokensMinted(address indexed to, uint256 amount)',
     'event TokensBurned(address indexed from, uint256 amount)',
+    'function mintViaDedicatedAddress(address to, uint256 amount)',
     'function burn(uint256 amount)',
     'function mintToAdmin(uint256 amount)',
+    'function setDedicatedAddress(address _dedicatedAddress)',
   ];
 
-  const sourceContractAddress =
-    sourceChainId === '421614'
-      ? arbitrumContractAddress
-      : optimismContractAddress;
-
-      //sendToServer function to send transaction details to the server
-  const sendToServer = async (chainId: string, target: string, data: string) => {
-    try {
-      const response = await ky.post('http://localhost:3000/send-tokens', {
-        json: {
-          chainId,
-          target,
-          data,
-        },
-      }).json<{ taskId: string }>();
-
-      console.log('Server response:', response);
-      if (response.taskId) {
-        alert(`Bridge transaction submitted successfully! Task ID: ${response.taskId}`);
-      } else {
-        alert('Failed to submit bridge transaction. Please check server logs.');
+  useEffect(() => {
+    const updateNetworkInfo = async () => {
+      if (signer.provider) {
+        const network = await signer.provider.getNetwork();
+        const chainId = network.chainId.toString();
+        setCurrentChainId(chainId);
+        console.log("Connected to network:", network.name, "Chain ID:", chainId);
       }
-    } catch (error) {
-      console.error('Error sending to server:', error);
-      alert('Failed to send transaction details to server.');
+    };
+
+    updateNetworkInfo();
+
+    const provider = signer.provider as ethers.BrowserProvider;
+    if (provider) {
+      provider.on('network', (newNetwork) => {
+        console.log("Network changed to:", newNetwork.chainId);
+        setCurrentChainId(newNetwork.chainId.toString());
+      });
     }
-  };
+
+    return () => {
+      if (provider) {
+        provider.removeAllListeners('network');
+      }
+    };
+  }, [signer]);
+
+  useEffect(() => {
+    if (currentChainId === '421614' || currentChainId === '11155420') {
+      setSourceChainId(currentChainId);
+      setDestChainId(currentChainId === '421614' ? '11155420' : '421614');
+    }
+  }, [currentChainId]);
 
   const handleBridge = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      // Create a contract instance for the source chain, 
-      //Call the burn function on the contract
-      const contract = new ethers.Contract(sourceContractAddress, ABI, signer);
-      const tx = await contract.burn(ethers.parseUnits(amount, 18));
-      const receipt = await tx.wait();
-
-      // Extract the TokensBurned event from the receipt
-      const burnEvent = receipt?.logs.find(
-        (log: ethers.Log) => log.topics[0] === ethers.id('TokensBurned(address,uint256)')
-      );
-
-      if (!burnEvent) {
-        throw new Error('TokensBurned event not found in transaction receipt');
+      if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+        throw new Error('Please enter a valid amount.');
       }
 
-      const fromAddress = await signer.getAddress();
+      if (!signer.provider) {
+        throw new Error('No provider available');
+      }
 
-      // Encode the function call data for the Web3 Function
-      const encodedData = ethers.AbiCoder.defaultAbiCoder().encode(
-        ['address', 'uint256'],
-        [fromAddress, ethers.parseUnits(amount, 18)]
-      );
+      if (currentChainId !== sourceChainId) {
+        throw new Error(`Please switch to the ${sourceChainId === '421614' ? 'Arbitrum Sepolia' : 'Optimism Sepolia'} network to proceed.`);
+      }
 
-      // Send the transaction details to the server
-      await sendToServer(sourceChainId, sourceContractAddress, encodedData);
+      const contractAddress = currentChainId === '421614' ? arbitrumContractAddress : optimismContractAddress;
+      const contract = new ethers.Contract(contractAddress, ABI, signer);
 
+      console.log(`Initiating burn on chain ${currentChainId} for amount ${amount}`);
+      const tx = await contract.burn(ethers.parseUnits(amount, 18));
+      console.log("Transaction sent:", tx.hash);
+      await tx.wait();
+      console.log("Transaction mined");
+
+      alert(`Bridge transaction (burn) submitted successfully on ${currentChainId === '421614' ? 'Arbitrum Sepolia' : 'Optimism Sepolia'}! The Web3Function will handle minting on the destination chain.`);
     } catch (error) {
-      console.error('Error:', error);
-      alert('An error occurred while bridging.');
+      console.error('Error in handleBridge:', error);
+      if (isNetworkError(error) && error.code === 'NETWORK_ERROR') {
+        alert('Network changed during the transaction. Please ensure you are on the correct network and try again.');
+      } else {
+        alert('An error occurred while bridging: ' + (error as Error).message);
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleSourceChainChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSourceChainId(e.target.value);
-    setTargetChainId(e.target.value === '421614' ? '11155420' : '421614');
+    const newSourceChainId = e.target.value;
+    setSourceChainId(newSourceChainId);
+    setDestChainId(newSourceChainId === '421614' ? '11155420' : '421614');
   };
 
   const mintTokens = async () => {
-    if (!signer) return;
+    if (!signer || !signer.provider) return;
     setIsLoading(true);
+
     try {
-      const provider = signer.provider;
-      if (!provider) {
-        throw new Error('No provider available');
-      }
-
-      const network = await provider.getNetwork();
-      const chainId = network.chainId;
-
-      const contractAddress =
-        chainId === 421614n ? arbitrumContractAddress : optimismContractAddress;
+      const contractAddress = currentChainId === '421614' ? arbitrumContractAddress : optimismContractAddress;
       const contract = new ethers.Contract(contractAddress, ABI, signer);
+      
+      console.log(`Minting tokens on chain ${currentChainId}`);
       const tx = await contract.mintToAdmin(ethers.parseUnits('100', 18));
+      console.log("Mint transaction sent:", tx.hash);
       await tx.wait();
+      console.log("Mint transaction mined");
+      
       alert('Tokens minted successfully!');
     } catch (error) {
       console.error('Error minting tokens:', error);
-      alert('Failed to mint tokens.');
+      alert('Failed to mint tokens: ' + (error as Error).message);
     } finally {
       setIsLoading(false);
     }
@@ -146,18 +157,21 @@ const BridgeUI: React.FC<BridgeUIProps> = ({
         </div>
         <div>
           <label>To Chain:</label>
-          <select value={targetChainId} disabled>
+          <select value={destChainId} disabled>
             <option value="421614">Arbitrum Sepolia</option>
             <option value="11155420">Optimism Sepolia</option>
           </select>
         </div>
-        <button type="submit" disabled={isLoading}>
+        <button type="submit" disabled={isLoading || currentChainId !== sourceChainId}>
           {isLoading ? 'Bridging...' : 'Bridge Tokens'}
         </button>
         <button type="button" onClick={mintTokens} disabled={isLoading}>
           Mint Test Tokens
         </button>
       </form>
+      {currentChainId !== sourceChainId && (
+        <p className="warning">Please switch to the {sourceChainId === '421614' ? 'Arbitrum Sepolia' : 'Optimism Sepolia'} network to proceed.</p>
+      )}
     </div>
   );
 };

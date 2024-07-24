@@ -46,12 +46,6 @@ Web3Function.onRun(async (context: Web3FunctionEventContext) => {
     let sourceChainId = Number(gelatoArgs.chainId);
     console.log('Source Chain ID from gelatoArgs:', sourceChainId);
 
-    // Check if the sourceChainId is one of the expected chain IDs
-    // if (sourceChainId !== arbitrumChainID && sourceChainId !== optimismChainID) {
-    //   console.log('Unexpected source chain ID. Defaulting to Arbitrum Sepolia.');
-    //   sourceChainId = arbitrumChainID;
-    // }
-
     function getTargetChainIdAndContract(sourceChainId: number): {
       chainId: number;
       contractAddress: string;
