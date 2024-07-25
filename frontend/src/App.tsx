@@ -29,9 +29,14 @@ const App: React.FC = () => {
     setupSigner();
   }, []);
 
-  const arbitrumContractAddress = '0xaEcA7e29566BbaF2dB1D3377DDE4c8AFf9356a67';
-  const optimismContractAddress = '0x0c2AF99BA6A0fbd5FEc90564414BD97db6d95057';
+  const arbitrumContractAddress = import.meta.env.VITE_CONTRACT_ADDRESS_ARBITRUM_SEPOLIA;
+  const optimismContractAddress = import.meta.env.VITE_CONTRACT_ADDRESS_OPTIMISM_SEPOLIA;
 
+  if (!arbitrumContractAddress || !optimismContractAddress) {
+    console.error('Contract addresses are not properly set in environment variables');
+    return <div>Error: Contract addresses are not properly configured.</div>;
+  }
+  
   return (
     <div>
       {signer ? (
