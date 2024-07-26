@@ -112,6 +112,34 @@ const BridgeUI: React.FC<BridgeUIProps> = ({
     setDestChainId(newSourceChainId === '421614' ? '11155420' : '421614');
   };
 
+  const addTokenToMetaMask = async () => {
+    if (typeof window.ethereum !== 'undefined') {
+      try {
+        // Determine which contract address to use based on the current chain
+        const tokenAddress = currentChainId === '421614' ? arbitrumContractAddress : optimismContractAddress;
+  
+        // Request to add the token to MetaMask
+        await window.ethereum.request({
+          method: 'wallet_watchAsset',
+          params: {
+            type: 'ERC20',
+            options: {
+              address: tokenAddress,
+              symbol: 'MERC20',
+              decimals: 18,
+              image: 'https://your-token-logo-url.com', // Optional: URL to the token logo
+            },
+          },
+        });
+        console.log('Token added to MetaMask');
+      } catch (error) {
+        console.error('Error adding token to MetaMask:', error);
+      }
+    } else {
+      console.log('MetaMask is not installed');
+    }
+  };
+
   const mintTokens = async () => {
     if (!signer || !signer.provider) return;
     setIsLoading(true);
@@ -162,6 +190,7 @@ const BridgeUI: React.FC<BridgeUIProps> = ({
             <option value="11155420">Optimism Sepolia</option>
           </select>
         </div>
+        <button onClick={addTokenToMetaMask}>Add Token to MetaMask</button>
         <button type="submit" disabled={isLoading || currentChainId !== sourceChainId}>
           {isLoading ? 'Bridging...' : 'Bridge Tokens'}
         </button>

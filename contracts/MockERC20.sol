@@ -23,6 +23,8 @@ contract MockERC20 is ERC20, Ownable {
 
     // Mint function that allows the contract owner to mint new tokens
     function mintViaDedicatedAddress(address to, uint256 amount) external {
+        require(msg.sender == dedicatedAddress, "Only dedicated address can mint");
+
         _mint(to, amount);
         emit TokensMinted(to, amount);
     }
