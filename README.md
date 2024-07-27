@@ -118,6 +118,8 @@ The Web3 Function code is located in `web3Function/bridge/index.ts`. It listens 
 - Click "Bridge Tokens"
 - Approve the transaction in MetaMask
 
+https://github.com/user-attachments/assets/8ae1a04c-dc46-47ae-9634-8b36ff18572a
+
 ## Verify the result
 
 - Check that tokens were burned on the source chain
